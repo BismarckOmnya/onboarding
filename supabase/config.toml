@@ -343,3 +343,9 @@ entrypoint = "./functions/ghl-token-provider/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/ghl-token-provider/*.html" ]
+
+[functions.ghl-installation-creator]
+enabled = true
+verify_jwt = true
+import_map = "./functions/ghl-installation-creator/deno.json"
+entrypoint = "./functions/ghl-installation-creator/index.ts"
