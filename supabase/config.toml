@@ -349,3 +349,9 @@ enabled = true
 verify_jwt = true
 import_map = "./functions/ghl-installation-creator/deno.json"
 entrypoint = "./functions/ghl-installation-creator/index.ts"
+
+[functions.omnyawebhook]
+enabled = true
+verify_jwt = false # Importante: Los webhooks externos no pueden tener un JWT de Supabase
+import_map = "./functions/omnyawebhook/deno.json"
+entrypoint = "./functions/omnyawebhook/index.ts"
