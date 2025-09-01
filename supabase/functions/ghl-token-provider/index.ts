@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
     // 1. Obtener el refresh_token desde nuestra base de datos
     const { data: installation, error: dbError } = await supabaseAdmin
       .from('ghl_installations')
-      .select('refresh_token')
+      .select('refresh_token, onboarding_custom_value_id, complete')
       .eq('location_id', locationId)
       .single(); // .single() espera un solo resultado o ninguno
 
@@ -40,6 +40,8 @@ Deno.serve(async (req) => {
     }
 
     const refreshToken = installation.refresh_token;
+    const onboardingCustomValueId = installation.onboarding_custom_value_id;
+    const status = installation.complete;
 
     // 2. Usar el refresh_token para solicitar un nuevo access_token a GHL
     const params = new URLSearchParams();
@@ -83,7 +85,8 @@ Deno.serve(async (req) => {
     // --- FIN DE LA NUEVA LÓGICA ---
 
     // 3. Devolver el nuevo access_token al frontend
-    return new Response(JSON.stringify({ accessToken: tokenData.access_token }), {
+    return new Response(JSON.stringify({ accessToken: tokenData.access_token ,
+      onboardingCustomValueId: onboardingCustomValueId, complete:status }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     });

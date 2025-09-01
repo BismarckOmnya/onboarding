@@ -6,11 +6,15 @@ import { corsHeaders } from '../_shared/cors.ts';
 // Estructura del cuerpo del webhook
 interface WebhookPayload {
   type: string;
-  id: string; // locationId
   companyId: string;
+  appId: string;
+  versionId: string;
+  id: string;
   name: string;
   email: string;
-  stripeProductId: string;
+  stripeProductId: string | null;
+  timestamp: string;
+  webhookId: string;
 }
 
 // Estructura de la respuesta del token de ubicación
@@ -46,8 +50,20 @@ Deno.serve(async (req) => {
 
   try {
     const payload = (await req.json()) as WebhookPayload;
+
+if (payload.type !== 'LocationCreate') {
+      console.log(`Webhook ignorado: tipo '${payload.type}' no es 'LocationCreate'.`);
+      return new Response(JSON.stringify({ 
+        success: true, 
+        message: `Evento de tipo '${payload.type}' ignorado.` 
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      });
+    }
+
     const newLocationId = payload.id;
-    const companyId = payload.companyId;
+    const companyId = 'vpis3m6O9HQ1WlyZDRyT';
 
     if (!newLocationId || !companyId) {
       throw new Error('El "id" (locationId) y "companyId" son requeridos.');
@@ -136,7 +152,6 @@ Deno.serve(async (req) => {
       .insert({
         location_id: newLocationId,
         refresh_token: locationRefreshToken,
-        company_id: companyId,
         onboarding_custom_value_id: onboardingCustomValueId // Guardamos el nuevo ID
       });
 
